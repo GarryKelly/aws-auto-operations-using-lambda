@@ -8,5 +8,7 @@ public class TagNameRequest {
 	private String tagName;
 
 	private int generationCount = 5;
+	
+	private String snapshotName;
 
 }

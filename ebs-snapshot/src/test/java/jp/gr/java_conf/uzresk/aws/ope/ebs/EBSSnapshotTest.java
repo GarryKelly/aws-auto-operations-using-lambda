@@ -15,11 +15,10 @@ public class EBSSnapshotTest {
 		VolumeIdRequest volumeIdRequest = new VolumeIdRequest();
 		volumeIdRequest.setVolumeId("vol-xxxxxxxxxxxxxxxxxxxxxxx");
 		volumeIdRequest.setGenerationCount(3);
-
-//		EBSSnapshot ebsSnapshot = new EBSSnapshot();
-//		ebsSnapshot.createSnapshotFromVolumeId(volumeIdRequest, new TestContext());
+		volumeIdRequest.setSnapshotName("Earl");
+		System.out.println("Sample VolumeIdRequest is " + volumeIdRequest);
+		// EBSSnapshot ebsSnapshot = new EBSSnapshot();
+		// ebsSnapshot.createSnapshotFromVolumeId(volumeIdRequest, new TestContext());
 	}
-
-
 
 }

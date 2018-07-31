@@ -8,4 +8,6 @@ public class VolumeIdRequest {
 	private String volumeId;
 
 	private int generationCount = 5;
+	
+	private String snapshotName;
 }

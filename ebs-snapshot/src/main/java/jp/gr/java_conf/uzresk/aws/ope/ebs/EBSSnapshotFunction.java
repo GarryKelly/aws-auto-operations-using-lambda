@@ -31,6 +31,7 @@ import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.util.StringUtils;
 
 import jp.gr.java_conf.uzresk.aws.lambda.LambdaLock;
 import jp.gr.java_conf.uzresk.aws.ope.ebs.model.TagNameRequest;
@@ -46,7 +47,7 @@ public class EBSSnapshotFunction {
 		LambdaLogger logger = context.getLogger();
 		logger.log("create ebs snapshot from volumeid Start. backup target[" + volumeIdRequest + "]");
 
-		createSnapshot(volumeIdRequest.getVolumeId(), volumeIdRequest.getGenerationCount(), context);
+		createSnapshot(volumeIdRequest.getVolumeId(), volumeIdRequest.getGenerationCount(), volumeIdRequest.getSnapshotName(), context);
 	}
 
 	public void createSnapshotFromVolumeIds(VolumeIdRequests volumeIdRequests, Context context) {
@@ -72,7 +73,7 @@ public class EBSSnapshotFunction {
 			List<Volume> volumes = describeBackupVolumes(client, tagNameRequest);
 
 			for (Volume volume : volumes) {
-				createSnapshot(volume.getVolumeId(), tagNameRequest.getGenerationCount(), context);
+				createSnapshot(volume.getVolumeId(), tagNameRequest.getGenerationCount(), tagNameRequest.getSnapshotName(), context);
 			}
 		} finally {
 			client.shutdown();
@@ -89,7 +90,7 @@ public class EBSSnapshotFunction {
 		return result.getVolumes();
 	}
 
-	void createSnapshot(String volumeId, int generationCount, Context context) {
+	void createSnapshot(String volumeId, int generationCount, final String snapshotName, Context context) {
 
 		LambdaLogger logger = context.getLogger();
 
@@ -124,7 +125,7 @@ public class EBSSnapshotFunction {
 			logger.log("EBS snapshot created. SnapshotId[" + snapshotId + "] VolumeId[" + volumeId + "]");
 
 			// add a tag to the snapshot
-			attachSnapshotTags(client, volumeId, snapshotId);
+			attachSnapshotTags(client, volumeId, snapshotId, snapshotName);
 
 			pargeEbsSnapshot(client, volumeId, generationCount, context);
 
@@ -138,11 +139,13 @@ public class EBSSnapshotFunction {
 		}
 	}
 
-	void attachSnapshotTags(AmazonEC2Async client, String volumeId, String snapshotId) {
+	void attachSnapshotTags(AmazonEC2Async client, String volumeId, String snapshotId, final String snapshotName) {
 
 		List<Tag> tags = new ArrayList<Tag>();
 		tags.add(new Tag("VolumeId", volumeId));
 		tags.add(new Tag("BackupType", "snapshot"));
+		if (!StringUtils.isNullOrEmpty(snapshotName))
+			tags.add(new Tag("Name", snapshotName));
 
 		CreateTagsRequest snapshotTagsRequest = new CreateTagsRequest().withResources(snapshotId);
 		snapshotTagsRequest.setTags(tags);
