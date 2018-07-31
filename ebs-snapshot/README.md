@@ -75,7 +75,8 @@ Setting the Cloudwatch event
  ```
     {
       "volumeId": "vol-xxxxxxxxxxxxxxxxx",
-      "generationCount": "2"
+      "generationCount": "2",
+      "snapshotName": "optionalName"
     }
   ```
 
@@ -102,7 +103,8 @@ Setting the Cloudwatch event
       "volumeIdRequests": [
         {
           "volumeId": "vol-xxxxxxxxxxxxxxxxx",
-          "generationCount": "2"
+          "generationCount": "2",
+          "snapshotName": "optionalName"
         },
         {
           "volumeId": "vol-yyyyyyyyyyyyyyyyy",
@@ -133,7 +135,8 @@ Setting the Cloudwatch event
  ```
     {
       "tagName": "test",
-      "generationCount": 2
+      "generationCount": 2,
+      "snapshotName": "optionalName"
     }
  ```
 
